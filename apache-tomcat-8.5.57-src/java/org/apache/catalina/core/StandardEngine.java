@@ -116,6 +116,7 @@ public class StandardEngine extends ContainerBase implements Engine {
     @Override
     public Realm getRealm() {
         Realm configured = super.getRealm();
+        // 对域的设置
         // If no set realm has been called - default to NullRealm
         // This can be overridden at engine, context and host level
         if (configured == null) {
@@ -230,7 +231,7 @@ public class StandardEngine extends ContainerBase implements Engine {
 
     }
 
-
+    //init中并没有host,context,wrapper的
     @Override
     protected void initInternal() throws LifecycleException {
         // Ensure that a Realm is present before any attempt is made to start

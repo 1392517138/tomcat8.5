@@ -48,6 +48,15 @@ import org.apache.tomcat.util.res.StringManager;
  * @author Craig R. McClanahan
  */
 
+/**
+ * engine
+ *       executor
+ *       connector      到这就停止了，init就没了
+ *
+ *       host
+ *       context
+ *       wrapper等等在start后
+ */
 public class StandardService extends LifecycleMBeanBase implements Service {
 
     private static final Log log = LogFactory.getLog(StandardService.class);

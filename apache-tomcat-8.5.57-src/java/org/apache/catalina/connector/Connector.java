@@ -1044,6 +1044,10 @@ public class Connector extends LifecycleMBeanBase  {
         super.initInternal();
 
         // Initialize adapter
+        //初始化适配器。
+        /**
+         * CoyoteAdapter为processor 到 Mapper 到  service的一个适配器
+         */
         adapter = new CoyoteAdapter(this);
         protocolHandler.setAdapter(adapter);
 
@@ -1072,6 +1076,9 @@ public class Connector extends LifecycleMBeanBase  {
         }
 
         try {
+            /**
+             * 这里引入了一个protocolHandler
+             */
             protocolHandler.init();
         } catch (Exception e) {
             throw new LifecycleException(

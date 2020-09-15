@@ -59,6 +59,10 @@ import org.apache.tomcat.util.res.StringManager;
  *
  * @author Craig R. McClanahan
  */
+
+/**
+ * services,server下有多个services
+ */
 public final class StandardServer extends LifecycleMBeanBase implements Server {
 
     private static final Log log = LogFactory.getLog(StandardServer.class);
@@ -754,8 +758,9 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
      */
     @Override
     protected void startInternal() throws LifecycleException {
-
+        //发布一个启动的事件
         fireLifecycleEvent(CONFIGURE_START_EVENT, null);
+        //设置一个状态
         setState(LifecycleState.STARTING);
 
         globalNamingResources.start();

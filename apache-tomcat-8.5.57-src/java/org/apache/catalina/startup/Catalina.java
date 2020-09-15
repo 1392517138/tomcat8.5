@@ -528,6 +528,7 @@ public class Catalina {
     /**
      * Start a new server instance.
      */
+    //初始化
     public void load() {
 
         if (loaded) {
@@ -536,15 +537,19 @@ public class Catalina {
         loaded = true;
 
         long t1 = System.nanoTime();
-
+        //初始化目录
         initDirs();
 
         // Before digester - it may be needed
+        //初始化命名空间
         initNaming();
 
         // Create and execute our Digester
+        //解析器，解析server.xml
+        //一个个生成其中的组件对象
         Digester digester = createStartDigester();
 
+        //下面就是读xml文件
         InputSource inputSource = null;
         InputStream inputStream = null;
         File file = null;
@@ -626,7 +631,7 @@ public class Catalina {
                 }
             }
         }
-
+        //初始化类加载器
         getServer().setCatalina(this);
         getServer().setCatalinaHome(Bootstrap.getCatalinaHomeFile());
         getServer().setCatalinaBase(Bootstrap.getCatalinaBaseFile());
@@ -635,6 +640,7 @@ public class Catalina {
         initStreams();
 
         // Start the new server
+        // 初始化服务器
         try {
             getServer().init();
         } catch (LifecycleException e) {
@@ -685,6 +691,7 @@ public class Catalina {
 
         // Start the new server
         try {
+            //在Catalina里面调用了server的start方法
             getServer().start();
         } catch (LifecycleException e) {
             log.fatal(sm.getString("catalina.serverStartFail"), e);

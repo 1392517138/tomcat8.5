@@ -132,17 +132,29 @@ public final class Bootstrap {
      * Daemon reference.
      */
     private Object catalinaDaemon = null;
-    //tomcat定义的三个类记载器
+    //tomcat定义的三个类记载器 URLClassLoader
+    //JVM类加载器
+    //sharedLoader是所有web的加载器
+    /**
+     * 它这么做是为了打破jvm的双亲委派机制，它认为效率是不高的
+     * 它先在内存中去加载（sharedLoader）
+     */
     ClassLoader commonLoader = null;
     ClassLoader catalinaLoader = null;
     ClassLoader sharedLoader = null;
 
+    /**
+     *                  commonLoader
+     *   catalinaLoader             sharedLoader
+     *                          webApp1       webApp2
+     */
 
     // -------------------------------------------------------- Private Methods
 
 
     private void initClassLoaders() {
         try {
+            //将parent设置为null，这就是它设置的一个比较独特的地方。就不往上面找了
             commonLoader = createClassLoader("common", null);
             if (commonLoader == null) {
                 // no config file, default to this loader - we might be in a 'single' env.
@@ -297,6 +309,7 @@ public final class Bootstrap {
             param = new Object[1];
             param[0] = arguments;
         }
+        //这其实是Catalina的load()
         Method method =
             catalinaDaemon.getClass().getMethod(methodName, paramTypes);
         if (log.isDebugEnabled()) {
@@ -471,7 +484,9 @@ public final class Bootstrap {
 
             if (command.equals("startd")) {
                 args[args.length - 1] = "start";
+                //这个load方法就是Catalina的load方法
                 daemon.load(args);
+                //反射调用catalina的start方法
                 daemon.start();
             } else if (command.equals("stopd")) {
                 args[args.length - 1] = "stop";
