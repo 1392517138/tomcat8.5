@@ -421,6 +421,7 @@ public class HostConfig implements LifecycleListener {
         File configBase = host.getConfigBaseFile();
         String[] filteredAppPaths = filterAppPaths(appBase.list());
         // Deploy XML descriptors from configBase
+        //<host><context>，在host中找到context应用，然后去部署
         deployDescriptors(configBase, configBase.list());
         // Deploy WARs
         deployWARs(appBase, filteredAppPaths);
@@ -1563,7 +1564,7 @@ public class HostConfig implements LifecycleListener {
             host.setDeployOnStartup(false);
             host.setAutoDeploy(false);
         }
-
+        //部署了webApp
         if (host.getDeployOnStartup())
             deployApps();
 
@@ -1716,6 +1717,7 @@ public class HostConfig implements LifecycleListener {
                 isWar = true;
             }
         }
+        //将应用添加到host结点下去了
         host.addChild(context);
         // Add the eventual unpacked WAR and all the resources which will be
         // watched inside it

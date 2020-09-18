@@ -4905,6 +4905,7 @@ public class StandardContext extends ContainerBase
             log.debug("Starting " + getBaseName());
 
         // Send j2ee.state.starting notification
+        // 把这个状态发布出去，
         if (this.getObjectName() != null) {
             Notification notification = new Notification("j2ee.state.starting",
                     this.getObjectName(), sequenceNumber.getAndIncrement());
@@ -4921,6 +4922,7 @@ public class StandardContext extends ContainerBase
         }
 
         // Post work directory
+        // 创建工作目录
         postWorkDirectory();
 
         // Add missing components as necessary

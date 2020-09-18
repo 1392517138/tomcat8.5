@@ -748,6 +748,8 @@ public class StandardWrapper extends ContainerBase
         boolean newInstance = false;
 
         // If not SingleThreadedModel, return the same instance every time
+        // 如果是非单线程模式
+        // 双重监测模式，保证线程的安全性
         if (!singleThreadModel) {
             // Load and initialize our instance if necessary
             if (instance == null || !instanceInitialized) {
@@ -760,13 +762,14 @@ public class StandardWrapper extends ContainerBase
 
                             // Note: We don't know if the Servlet implements
                             // SingleThreadModel until we have loaded it.
-                            instance = loadServlet();
+                            instance = loadServlet(); //InstanceManager
                             newInstance = true;
                             if (!singleThreadModel) {
                                 // For non-STM, increment here to prevent a race
                                 // condition with unload. Bug 43683, test case
                                 // #3
                                 countAllocated.incrementAndGet();
+                                //每一个访问都是同一个
                             }
                         } catch (ServletException e) {
                             throw e;
@@ -786,6 +789,8 @@ public class StandardWrapper extends ContainerBase
                     // Have to do this outside of the sync above to prevent a
                     // possible deadlock
                     synchronized (instancePool) {
+                        // 放pool里面是为了每一个servlet来都是不同的
+                        // 每一个线程使用的是不同的
                         instancePool.push(instance);
                         nInstances++;
                     }

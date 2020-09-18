@@ -984,12 +984,18 @@ public abstract class AbstractHttp11Protocol<S> extends AbstractProtocol<S> {
 
     @Override
     protected Processor createProcessor() {
+        //构建Http11Processor
         Http11Processor processor = new Http11Processor(this, getEndpoint());
         processor.setAdapter(getAdapter());
+        //2.默认的KeepAlive情况下，每个Socket处理的最多的请求次数
         processor.setMaxKeepAliveRequests(getMaxKeepAliveRequests());
+        //3.开启KeepAlive的Timeout
         processor.setConnectionUploadTimeout(getConnectionUploadTimeout());
+        //4.http当遇到文件上传时的默认超时时间（300*1000）
         processor.setDisableUploadTimeout(getDisableUploadTimeout());
+        //5.
         processor.setRestrictedUserAgents(getRestrictedUserAgents());
+        //6.最大的Post处理尺寸的大小4*1000
         processor.setMaxSavePostSize(getMaxSavePostSize());
         return processor;
     }

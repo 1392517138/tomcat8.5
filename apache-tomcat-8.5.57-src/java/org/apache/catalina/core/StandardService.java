@@ -538,7 +538,18 @@ public class StandardService extends LifecycleMBeanBase implements Service {
     protected void initInternal() throws LifecycleException {
 
         super.initInternal();
-
+/**
+ *  engine-init-->LifecycleBase-init-->standardEngine.initInternal{getRealm/super.initInternal}
+ *                      {
+ * 						ContainerBase.getRealm
+ * 						ContainerBase.initInternal
+ * 						super.initInternal		(LifecycleMBeanBase.initInternal)
+ *                      }
+ * 		executor-init
+ * 		mapperListener-init
+ * 		connector-init
+ * 		lifecycleBase-INITIALIZED
+ */
         if (engine != null) {
             engine.init();
         }

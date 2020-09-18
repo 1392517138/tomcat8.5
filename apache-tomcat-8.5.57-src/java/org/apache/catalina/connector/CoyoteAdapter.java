@@ -300,17 +300,18 @@ public class CoyoteAdapter implements Adapter {
     public void service(org.apache.coyote.Request req, org.apache.coyote.Response res)
             throws Exception {
 
+        //转化Request和response
         Request request = (Request) req.getNote(ADAPTER_NOTES);
         Response response = (Response) res.getNote(ADAPTER_NOTES);
 
         if (request == null) {
-            // Create objects
+            // Create objects 通过Connector创建request和response
             request = connector.createRequest();
             request.setCoyoteRequest(req);
             response = connector.createResponse();
             response.setCoyoteResponse(res);
 
-            // Link objects
+            // Link objects,将request和response链接起来，它们俩是一一对应的
             request.setResponse(response);
             response.setRequest(request);
 
@@ -318,7 +319,7 @@ public class CoyoteAdapter implements Adapter {
             req.setNote(ADAPTER_NOTES, request);
             res.setNote(ADAPTER_NOTES, response);
 
-            // Set query string encoding
+            // Set query string encoding URI的编码
             req.getParameters().setQueryStringCharset(connector.getURICharset());
         }
 
@@ -334,6 +335,7 @@ public class CoyoteAdapter implements Adapter {
         try {
             // Parse and set Catalina and configuration specific
             // request parameters
+            //再map里面去解析业务请求
             postParseSuccess = postParseRequest(req, request, res, response);
             if (postParseSuccess) {
                 //check valves if we support async
@@ -564,6 +566,7 @@ public class CoyoteAdapter implements Adapter {
      * @throws ServletException If the supported methods of the target servlet
      *                          cannot be determined
      */
+    //读懂，算法
     protected boolean postParseRequest(org.apache.coyote.Request req, Request request,
             org.apache.coyote.Response res, Response response) throws IOException, ServletException {
 

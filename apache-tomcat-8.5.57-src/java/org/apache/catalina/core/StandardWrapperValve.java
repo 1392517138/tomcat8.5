@@ -98,8 +98,8 @@ final class StandardWrapperValve
         Throwable throwable = null;
         // This should be a Request attribute...
         long t1=System.currentTimeMillis();
-        requestCount.incrementAndGet();
-        StandardWrapper wrapper = (StandardWrapper) getContainer();
+        requestCount.incrementAndGet();//增加请求次数 CAS
+        StandardWrapper wrapper = (StandardWrapper) getContainer();//standWrapper和Value去对应
         Servlet servlet = null;
         Context context = (Context) wrapper.getParent();
 
@@ -129,8 +129,10 @@ final class StandardWrapperValve
         }
 
         // Allocate a servlet instance to process this request
+        // Servlet默认的是再第一次请求的时候实例化。延迟加载
         try {
             if (!unavailable) {
+                // 关注这一个方法
                 servlet = wrapper.allocate();
             }
         } catch (UnavailableException e) {
@@ -161,7 +163,7 @@ final class StandardWrapperValve
             exception(request, response, e);
             servlet = null;
         }
-
+        //获取Servlet的path
         MessageBytes requestPathMB = request.getRequestPathMB();
         DispatcherType dispatcherType = DispatcherType.REQUEST;
         if (request.getDispatcherType()==DispatcherType.ASYNC) dispatcherType = DispatcherType.ASYNC;
@@ -169,6 +171,7 @@ final class StandardWrapperValve
         request.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
                 requestPathMB);
         // Create the filter chain for this request
+        // 过滤器链
         ApplicationFilterChain filterChain =
                 ApplicationFilterFactory.createFilterChain(request, wrapper, servlet);
 
@@ -183,6 +186,7 @@ final class StandardWrapperValve
                         if (request.isAsyncDispatching()) {
                             request.getAsyncContextInternal().doInternalDispatch();
                         } else {
+                            // 执行过滤链
                             filterChain.doFilter(request.getRequest(),
                                     response.getResponse());
                         }
@@ -256,6 +260,7 @@ final class StandardWrapperValve
         } finally {
             // Release the filter chain (if any) for this request
             if (filterChain != null) {
+                // 释放资源
                 filterChain.release();
             }
 

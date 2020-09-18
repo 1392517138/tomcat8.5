@@ -921,7 +921,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
         //启动子容器
         // Start our child containers, if any
         Container children[] = findChildren();
-        //Future是一个解决同步的框架，可以去并发地执行
+        //Future是一个异步的框架，可以去并发地执行
         List<Future<Void>> results = new ArrayList<>();
         for (Container child : children) {
             results.add(startStopExecutor.submit(new StartChild(child)));
@@ -951,7 +951,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
             ((Lifecycle) pipeline).start();
         }
 
-
+        //处理在这，因为状态的改变会激发我们的监听器HostConfig
         setState(LifecycleState.STARTING);
 
         // Start our thread

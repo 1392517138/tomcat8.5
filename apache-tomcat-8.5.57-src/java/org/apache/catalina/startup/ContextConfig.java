@@ -1168,6 +1168,7 @@ public class ContextConfig implements LifecycleListener {
                 configureContext(webXml);
             }
         } else {
+            //根据你解析的xml文件进行配置
             webXml.merge(defaults);
             convertJsps(webXml);
             configureContext(webXml);
@@ -1195,6 +1196,7 @@ public class ContextConfig implements LifecycleListener {
 
         // Step 11. Apply the ServletContainerInitializer config to the
         // context
+        //扫描出来了在这里添加子节点
         if (ok) {
             for (Map.Entry<ServletContainerInitializer,
                     Set<Class<?>>> entry :
@@ -2068,7 +2070,7 @@ public class ContextConfig implements LifecycleListener {
     protected void processAnnotationsStream(InputStream is, WebXml fragment,
             boolean handlesTypesOnly, Map<String,JavaClassCacheEntry> javaClassCache)
             throws ClassFormatException, IOException {
-
+        //它有自己的类解析器，这里不是加载是解析
         ClassParser parser = new ClassParser(is);
         JavaClass clazz = parser.parse();
         checkHandlesTypes(clazz, javaClassCache);

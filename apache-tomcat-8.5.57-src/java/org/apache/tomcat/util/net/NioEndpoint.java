@@ -404,22 +404,24 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             socket.configureBlocking(false);
             Socket sock = socket.socket();
             socketProperties.setProperties(sock);
-
+            //把上面SocketChannel这种socket设置为NioChannel
             NioChannel channel = nioChannels.pop();
             if (channel == null) {
                 SocketBufferHandler bufhandler = new SocketBufferHandler(
                         socketProperties.getAppReadBufSize(),
                         socketProperties.getAppWriteBufSize(),
                         socketProperties.getDirectBuffer());
-                if (isSSLEnabled()) {
+                if (isSSLEnabled()) { //https ssl
                     channel = new SecureNioChannel(socket, bufhandler, selectorPool, this);
                 } else {
+                    //http1.1
                     channel = new NioChannel(socket, bufhandler);
                 }
             } else {
                 channel.setIOChannel(socket);
                 channel.reset();
             }
+            //先得到poller对象，再register加入到一个队列里面
             getPoller0().register(channel);
         } catch (Throwable t) {
             ExceptionUtils.handleThrowable(t);
@@ -505,6 +507,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                     if (running && !paused) {
                         // setSocketOptions() will hand the socket off to
                         // an appropriate processor if successful
+                        //为这个socket设置一些属性
                         if (!setSocketOptions(socket)) {
                             closeSocket(socket);
                         }
@@ -745,6 +748,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             ka.setReadTimeout(getConnectionTimeout());
             ka.setWriteTimeout(getConnectionTimeout());
             PollerEvent r = eventCache.pop();
+            //生成getPoller0()，相当于把socket加入到队列里面EvenQueue
             ka.interestOps(SelectionKey.OP_READ);//this is what OP_REGISTER turns into.
             if ( r==null) r = new PollerEvent(socket,ka,OP_REGISTER);
             else r.reset(socket,ka,OP_REGISTER);
@@ -832,6 +836,9 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                         wakeupCounter.set(0);
                     }
                     if (close) {
+                        //该方法遍历了eventqueue中所有PollorEvent
+                        //然后依次调用PollerEvent的run
+                        //将socket注册到selector中
                         events();
                         timeout(0, false);
                         try {
@@ -862,6 +869,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                         iterator.remove();
                     } else {
                         iterator.remove();
+                        //将他移除过后，
                         processKey(sk, attachment);
                     }
                 }//while
@@ -890,6 +898,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                                     closeSocket = true;
                                 }
                             }
+                            //上面是一个读事件，下面是一个写事件
                             if (!closeSocket && sk.isWritable()) {
                                 if (!processSocket(attachment, SocketEvent.OPEN_WRITE, true)) {
                                     closeSocket = true;
